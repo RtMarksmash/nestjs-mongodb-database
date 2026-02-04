@@ -1,12 +1,18 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { Model } from 'mongoose';
 
 import { Product } from './../entities/product.entity';
-import { CreateProductDto, UpdateProductDto } from './../dtos/products.dtos';
+//import { CreateProductDto, UpdateProductDto } from './../dtos/products.dtos';
+import { InjectModel } from '@nestjs/mongoose';
 
 @Injectable()
 export class ProductsService {
+  constructor(
+    @InjectModel(Product.name)
+    private readonly modelProducts: Model<Product>,
+  ) {}
   private counterId = 1;
-  private products: Product[] = [
+  /*  private products: Product[] = [
     {
       id: 1,
       name: 'Product 1',
@@ -16,20 +22,20 @@ export class ProductsService {
       stock: 12,
     },
   ];
-
+ */
   findAll() {
-    return this.products;
+    return this.modelProducts.find().exec();
   }
 
-  findOne(id: number) {
-    const product = this.products.find((item) => item.id === id);
+  async findOne(id: string) {
+    const product = await this.modelProducts.findById(id).exec();
     if (!product) {
       throw new NotFoundException(`Product #${id} not found`);
     }
     return product;
   }
 
-  create(payload: CreateProductDto) {
+  /*  create(payload: CreateProductDto) {
     console.log(payload);
     this.counterId = this.counterId + 1;
     const newProduct = {
@@ -57,5 +63,5 @@ export class ProductsService {
     }
     this.products.splice(index, 1);
     return true;
-  }
+  } */
 }
