@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { Model } from 'mongoose';
 
 import { Product } from './../entities/product.entity';
-//import { CreateProductDto, UpdateProductDto } from './../dtos/products.dtos';
+import { CreateProductDto, UpdateProductDto } from './../dtos/products.dtos';
 import { InjectModel } from '@nestjs/mongoose';
 
 @Injectable()
@@ -12,17 +12,7 @@ export class ProductsService {
     private readonly modelProducts: Model<Product>,
   ) {}
   private counterId = 1;
-  /*  private products: Product[] = [
-    {
-      id: 1,
-      name: 'Product 1',
-      description: 'bla bla',
-      price: 122,
-      image: '',
-      stock: 12,
-    },
-  ];
- */
+
   findAll() {
     return this.modelProducts.find().exec();
   }
@@ -35,33 +25,22 @@ export class ProductsService {
     return product;
   }
 
-  /*  create(payload: CreateProductDto) {
-    console.log(payload);
-    this.counterId = this.counterId + 1;
-    const newProduct = {
-      id: this.counterId,
-      ...payload,
-    };
-    this.products.push(newProduct);
-    return newProduct;
+  create(data: CreateProductDto) {
+    const newProduct = new this.modelProducts(data);
+    return newProduct.save();
   }
 
-  update(id: number, payload: UpdateProductDto) {
-    const product = this.findOne(id);
-    const index = this.products.findIndex((item) => item.id === id);
-    this.products[index] = {
-      ...product,
-      ...payload,
-    };
-    return this.products[index];
-  }
-
-  remove(id: number) {
-    const index = this.products.findIndex((item) => item.id === id);
-    if (index === -1) {
+  update(id: string, changes: UpdateProductDto) {
+    const product = this.modelProducts
+      .findByIdAndUpdate(id, { $set: changes }, { new: true })
+      .exec();
+    if (!product) {
       throw new NotFoundException(`Product #${id} not found`);
     }
-    this.products.splice(index, 1);
-    return true;
-  } */
+    return product;
+  }
+
+  remove(id: string) {
+    return this.modelProducts.findByIdAndDelete(id).exec();
+  }
 }
