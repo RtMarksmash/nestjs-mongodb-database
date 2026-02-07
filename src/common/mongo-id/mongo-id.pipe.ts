@@ -11,7 +11,7 @@ export class MongoIdPipe implements PipeTransform {
   transform(value: string, metadata: ArgumentMetadata) {
     if (!isMongoId(value)) {
       throw new BadRequestException(
-        `The value ${value} is not a valid MongoDB ID`,
+        `The value ${value} is not a valid MongoDB ID ${metadata.data}`,
       );
     }
     return value;

@@ -7,8 +7,11 @@ import {
   IsOptional,
   Min,
   ValidateIf,
+  ValidateNested,
 } from 'class-validator';
 import { PartialType, ApiProperty } from '@nestjs/swagger';
+
+import { CreateCategoryDto } from './category.dtos';
 
 export class CreateProductDto {
   @IsString()
@@ -37,6 +40,11 @@ export class CreateProductDto {
   @IsNotEmpty()
   @ApiProperty({ description: 'The image of the product' })
   readonly image: string;
+
+  @ValidateNested()
+  @IsNotEmpty()
+  @ApiProperty({ description: 'The category of the product' })
+  readonly category: CreateCategoryDto;
 }
 
 export class UpdateProductDto extends PartialType(CreateProductDto) {}
